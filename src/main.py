@@ -1,20 +1,36 @@
-from src.power import power_function
-from src.constants import SAMPLE_CONSTANT
+from src.support.logger import log_error
+from src.parser import parse
+from plugins.history import add_history #type: ignore
 
 
 def main() -> None:
     """
-    Обязательнная составляющая программ, которые сдаются. Является точкой входа в приложение
+    Является точкой входа в приложение.
+
     :return: Данная функция ничего не возвращает
     """
+    print("Hello, type 'exit' to quit.")
+    while True:
+        try:
+            command = input("%")
+            if command.strip() and command != 'exit' and 'history' not in command:
+                add_history(command)
+            if command.strip() == 'exit':
+                print("Goodbye!")
+                break
+            if not command.strip():
+                continue
+            success, result = parse(command)
+            if success:
+                if result:
+                    print(result)
+            else:
+                log_error(result)
+                print(f"Error: {result}")
+        except Exception as e:
+            log_error(f"Unexpected error: {str(e)}")
+            print(f"Unexpected error: {str(e)}")
 
-    target, degree = map(int, input("Введите два числа разделенные пробелом: ").split(" "))
-
-    result = power_function(target=target, power=degree)
-
-    print(result)
-
-    print(SAMPLE_CONSTANT)
 
 if __name__ == "__main__":
     main()
